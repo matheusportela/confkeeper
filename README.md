@@ -1,9 +1,15 @@
 # confkeeper
 Easily export and import configuration files
 
+## Requirements
+- Python 3
+- `pip`
+
 ## Install
 
 ```bash
+$ git clone https://github.com/matheusportela/confkeeper.git
+$ cd confkeeper
 $ pip install .
 ```
 
