@@ -7,10 +7,7 @@ from . import adapters
 
 class BaseExporter:
     def __init__(self, formatter):
-        self.adapters = [
-            adapters.VimAdapter(),
-            adapters.ZshAdapter(),
-        ]
+        self.adapters = [adapter() for adapter in adapters.adapters]
         self.formatter = formatter
 
     def export_files(self):

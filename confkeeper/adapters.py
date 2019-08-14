@@ -1,6 +1,13 @@
 import os
 
 
+adapters = [] # All registered adapters
+
+# Register adapter class (not instance) to "adapters" list
+def register_adapter(adapter):
+    adapters.append(adapter)
+
+
 class ProgramAdapter:
     def name(self):
         raise NotImplementedError(f'{self.__class__.__name__} must implement "name"')
@@ -36,6 +43,7 @@ class ZshAdapter(ProgramAdapter):
         return [
             '~/.zshrc',
         ]
+register_adapter(ZshAdapter)
 
 class VimAdapter(ProgramAdapter):
     def name(self):
@@ -45,3 +53,15 @@ class VimAdapter(ProgramAdapter):
         return [
             '~/.vimrc',
         ]
+register_adapter(VimAdapter)
+
+class SublimeTextAdapter(ProgramAdapter):
+    def name(self):
+        return 'sublime'
+
+    def paths(self):
+        return [
+            '~/Library/Application Support/Sublime Text 3/Packages/User/Package Control.sublime-settings',
+            '~/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings',
+        ]
+register_adapter(SublimeTextAdapter)
