@@ -29,7 +29,7 @@ def cli():
     short_help='export configurations to be imported in the future')
 @click.option(
     '--tar', '-t', is_flag=True, default=False,
-    help='export to compressed tarball')
+    help='export to compressed tarball (.tar.gz)')
 @click.option(
     '--output', '-o', 'output_path', metavar='FILE',
     help='file to export configurations to')
@@ -54,7 +54,7 @@ cli.add_command(execute_export)
     short_help='import configurations that were previously exported')
 @click.option(
     '--tar', '-t', is_flag=True, default=False,
-    help='import from compressed tarball')
+    help='import from compressed tarball (.tar.gz)')
 @click.option(
     '--input', '-i', 'input_path', metavar='FILE', help='file to import configurations from')
 @click.option(
