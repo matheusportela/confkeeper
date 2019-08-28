@@ -20,6 +20,15 @@ $ confkeeper -h
 ```
 
 **Exporting configuration files:**
+
+Export to `.tar.gz`:
+
+```bash
+$ confkeeper export -t -o configs.tar.gz
+```
+
+Other options:
+
 ```bash
 $ confkeeper export > configs.json
 $ confkeeper export -o configs.json
@@ -27,6 +36,15 @@ $ confkeeper export -f pickle -o configs.pickle
 ```
 
 **Import configuration files:**
+
+Import from `.tar.gz`:
+
+```bash
+$ confkeeper import -t -o configs.tar.gz
+```
+
+Other options:
+
 ```bash
 $ cat configs.json | confkeeper import
 $ confkeeper import -i configs.json
