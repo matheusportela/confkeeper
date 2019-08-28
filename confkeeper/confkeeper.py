@@ -28,6 +28,9 @@ def cli():
     name='export',
     short_help='export configurations to be imported in the future')
 @click.option(
+    '--tar', '-t', is_flag=True, default=False,
+    help='export to compressed tarball')
+@click.option(
     '--output', '-o', 'output_path', metavar='FILE',
     help='file to export configurations to')
 @click.option(
@@ -37,21 +40,21 @@ def cli():
 @click.option(
     '--dry-run', is_flag=True, default=False,
     help='print all files recognized by confkeeper')
-@click.option(
-    '--tar', '-t', is_flag=True, default=False,
-    help='export compressed tarball')
-def execute_export(output_path, format, dry_run, tar):
+def execute_export(tar, output_path, format, dry_run):
     """Export configurations to be imported in the future. Outputs to standard
     output by default.
     """
     formatter = create_formatter(format)
-    exporter = create_exporter(formatter, output_path, dry_run, tar)
+    exporter = create_exporter(formatter, tar, output_path, dry_run)
     exporter.export_files()
 cli.add_command(execute_export)
 
 @click.command(
     name='import',
     short_help='import configurations that were previously exported')
+@click.option(
+    '--tar', '-t', is_flag=True, default=False,
+    help='import from compressed tarball')
 @click.option(
     '--input', '-i', 'input_path', metavar='FILE', help='file to import configurations from')
 @click.option(
@@ -61,23 +64,24 @@ cli.add_command(execute_export)
 @click.option(
     '--dry-run', is_flag=True, default=False,
     help='print all files recognized by confkeeper')
-def execute_import(input_path, format, dry_run):
+def execute_import(tar, input_path, format, dry_run):
     """Import configurations that were previously exported. Reads from standard
     input by default.
     """
     formatter = create_formatter(format)
-    importer = create_importer(formatter, input_path, dry_run)
+    importer = create_importer(formatter, tar, input_path, dry_run)
     importer.import_files()
 cli.add_command(execute_import)
 
 def create_formatter(format):
     return formatters.formatters[format]
 
-def create_exporter(formatter, output_path, dry_run, tar):
-    if tar and output_path:
-        exporter = exporters.TarGzFileExporter(output_file=output_path)
-    elif tar:
-        exporter = exporters.TarGzFileExporter()
+def create_exporter(formatter, tar, output_path, dry_run):
+    if tar:
+        if output_path:
+            exporter = exporters.TarGzFileExporter(output_path)
+        else:
+            exporter = exporters.TarGzFileExporter()
     elif output_path:
         exporter = exporters.FileExporter(output_path, formatter)
     elif dry_run:
@@ -88,8 +92,13 @@ def create_exporter(formatter, output_path, dry_run, tar):
     logger.debug(f'Using "{exporter.__class__.__name__}" exporter')
     return exporter
 
-def create_importer(formatter, input_path, dry_run):
-    if input_path and dry_run:
+def create_importer(formatter, tar, input_path, dry_run):
+    if tar:
+        if input_path:
+            importer = importers.TarGzFileImporter(input_path)
+        else:
+            importer = importers.TarGzFileImporter()
+    elif input_path and dry_run:
         importer = importers.DryFileImporter(input_path, formatter)
     elif input_path:
         importer = importers.FileImporter(input_path, formatter)

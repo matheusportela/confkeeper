@@ -1,6 +1,10 @@
 import logging
 import os
+import shutil
 import sys
+import tarfile
+
+from . import formatters
 
 
 logger = logging.getLogger(__name__)
@@ -52,3 +56,46 @@ class FileImporter(BaseImporter):
 class DryFileImporter(FileImporter):
     def import_file(self, path, content):
         print(path)
+
+
+class TarGzFileImporter(BaseImporter):
+    def __init__(self, input_file='confkeeper-export.tar.gz'):
+        self.input_file = input_file
+
+    def import_files(self):
+        self._uncompress_tar(self.input_file)
+        tar_path = self._get_uncompressed_dir(self.input_file)
+        metadata = self._get_metadata(tar_path)
+        self._copy_files(tar_path, metadata)
+        self._remove_uncompressed_tar(tar_path)
+
+    def _uncompress_tar(self, tar_file):
+        with tarfile.open(tar_file, 'r:gz') as tar:
+            tar.extractall()
+
+    def _get_uncompressed_dir(self, tar_file):
+        with tarfile.open(tar_file, 'r:gz') as tar:
+            tar_path = tar.getnames()[0]
+
+        return tar_path
+
+    def _get_metadata(self, tar_path):
+        metadata_path = self._get_metadata_path(tar_path)
+        formatter = formatters.JSONFormatter()
+
+        with open(metadata_path) as fd:
+            metadata = formatter.convert_from_format(fd.read())
+
+        return metadata
+
+    def _get_metadata_path(self, tar_path):
+        return os.path.join(tar_path, 'metadata.json')
+
+    def _copy_files(self, tar_path, metadata):
+        for file_metadata in metadata:
+            copied_path = os.path.join(tar_path, file_metadata['copied_path'])
+            original_path = os.path.expanduser(file_metadata['original_path'])
+            shutil.copy2(copied_path, original_path)
+
+    def _remove_uncompressed_tar(self, tar_path):
+        shutil.rmtree(tar_path)

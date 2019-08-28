@@ -49,7 +49,7 @@ class DryStandardOutputExporter(BaseExporter):
                 print(file)
 
 class TarGzFileExporter(BaseExporter):
-    def __init__(self, output_file='confkeeper-export'):
+    def __init__(self, output_file='confkeeper-export.tar.gz'):
         self.adapters = [adapter() for adapter in adapters.adapters]
         self.output_file = output_file
 
@@ -99,5 +99,6 @@ class TarGzFileExporter(BaseExporter):
         return metadata
 
     def _generate_output_file(self, temp_dir, output_file):
-        with tarfile.open(f'{output_file}.tar.gz', 'w:gz') as tar:
-            tar.add(temp_dir, arcname=output_file)
+        with tarfile.open(output_file, 'w:gz') as tar:
+            tar_dir = output_file.split('.')[0]
+            tar.add(temp_dir, arcname=tar_dir)
