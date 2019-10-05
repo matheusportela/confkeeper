@@ -1,24 +1,30 @@
+import json
 import os
 
 
-adapters = [] # All registered adapters
-
-# Register adapter class (not instance) to "adapters" list
-def register_adapter(adapter):
-    adapters.append(adapter)
+CONFIG = {
+    'zsh': [
+        '~/.zshrc'
+    ],
+    'vim': [
+        '~/.vimrc'
+    ],
+    'sublime': [
+        '~/Library/Application Support/Sublime Text 3/Packages/User/Package Control.sublime-settings',
+        '~/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings'
+    ]
+}
 
 
 class ProgramAdapter:
-    def name(self):
-        raise NotImplementedError(f'{self.__class__.__name__} must implement "name"')
-
-    def paths(self):
-        raise NotImplementedError(f'{self.__class__.__name__} must implement "paths"')
+    def __init__(self, name, paths):
+        self.name = name
+        self.paths = paths
 
     def export_files(self):
         result = []
 
-        for path in self.paths():
+        for path in self.paths:
             content = self.export_file(path)
             if content:
                 result.append((path, content))
@@ -34,34 +40,16 @@ class ProgramAdapter:
 
         return content
 
+# All registered adapters
+adapters = []
 
-class ZshAdapter(ProgramAdapter):
-    def name(self):
-        return 'zsh'
+# Register adapter class (not instance) to "adapters" list
+def register_adapter(adapter):
+    adapters.append(adapter)
 
-    def paths(self):
-        return [
-            '~/.zshrc',
-        ]
-register_adapter(ZshAdapter)
+def build_adapters(config):
+    for name, paths in config.items():
+        adapter = ProgramAdapter(name, paths)
+        register_adapter(adapter)
 
-class VimAdapter(ProgramAdapter):
-    def name(self):
-        return 'vim'
-
-    def paths(self):
-        return [
-            '~/.vimrc',
-        ]
-register_adapter(VimAdapter)
-
-class SublimeTextAdapter(ProgramAdapter):
-    def name(self):
-        return 'sublime'
-
-    def paths(self):
-        return [
-            '~/Library/Application Support/Sublime Text 3/Packages/User/Package Control.sublime-settings',
-            '~/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings',
-        ]
-register_adapter(SublimeTextAdapter)
+build_adapters(CONFIG)

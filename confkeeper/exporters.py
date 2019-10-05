@@ -11,14 +11,13 @@ from . import formatters
 
 class BaseExporter:
     def __init__(self, formatter):
-        self.adapters = [adapter() for adapter in adapters.adapters]
         self.formatter = formatter
 
     def export_files(self):
         result = {}
 
-        for adapter in self.adapters:
-            result[adapter.name()] = dict(adapter.export_files())
+        for adapter in adapters.adapters:
+            result[adapter.name] = dict(adapter.export_files())
 
         return self.formatter.convert_to_format(result)
 
@@ -41,8 +40,8 @@ class FileExporter(BaseExporter):
 
 class DryStandardOutputExporter(BaseExporter):
     def export_files(self):
-        for adapter in self.adapters:
-            program = adapter.name()
+        for adapter in adapters.adapters:
+            program = adapter.name
             files = [file for file, _ in adapter.export_files()]
 
             for file in files:
@@ -50,7 +49,6 @@ class DryStandardOutputExporter(BaseExporter):
 
 class TarGzFileExporter(BaseExporter):
     def __init__(self, output_file='confkeeper-export.tar.gz'):
-        self.adapters = [adapter() for adapter in adapters.adapters]
         self.output_file = output_file
 
     def export_files(self):
@@ -64,8 +62,8 @@ class TarGzFileExporter(BaseExporter):
     def _get_program_files(self):
         program_files = {}
 
-        for adapter in self.adapters:
-            program_files[adapter.name()] = adapter.paths()
+        for adapter in adapters.adapters:
+            program_files[adapter.name] = adapter.paths
 
         return program_files
 
