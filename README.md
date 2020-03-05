@@ -40,7 +40,7 @@ $ confkeeper export -f pickle -o configs.pickle
 Import from `.tar.gz`:
 
 ```bash
-$ confkeeper import -t -o configs.tar.gz
+$ confkeeper import -t -i configs.tar.gz
 ```
 
 Other options:
