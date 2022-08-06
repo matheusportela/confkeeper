@@ -3,15 +3,34 @@ import os
 
 
 CONFIG = {
+    'bash': [
+        '~/.bash_profile',
+        '~/.bashrc',
+        '~/.profile'
+    ],
     'zsh': [
-        '~/.zshrc'
+        '~/.zshrc',
+        '~/.zlogin'
+    ],
+    'oh my zsh': [
+        '~/.oh-my-zsh/custom/aliases.zsh',
+        '~/.oh-my-zsh/templates/zshrc.zsh-template'
     ],
     'vim': [
         '~/.vimrc'
     ],
+    'git': [
+        '~/.gitconfig'
+    ],
     'sublime': [
         '~/Library/Application Support/Sublime Text 3/Packages/User/Package Control.sublime-settings',
         '~/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings'
+    ],
+    'vs code': [
+        '~/Library/Application Support/Code/User/settings.json',
+        '~/Library/Application Support/Code/User/keybindings.json',
+        '~/Library/Application Support/Code/User/extensions.json',
+        '~/Library/Application Support/Code/User/tasks.json'
     ]
 }
 
